@@ -4,7 +4,20 @@
   import path from 'path';
 
   export default defineConfig({
-    plugins: [react()],
+    plugins: [
+      react(),
+      {
+        name: 'configure-response-headers',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url?.endsWith('.wasm')) {
+              res.setHeader('Content-Type', 'application/wasm');
+            }
+            next();
+          });
+        },
+      },
+    ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       alias: {
@@ -56,5 +69,15 @@
     server: {
       port: 3000,
       open: true,
+      fs: {
+        strict: false,
+      },
+    },
+    optimizeDeps: {
+      exclude: ['brotli-wasm'],
+    },
+    assetsInclude: ['**/*.wasm'],
+    worker: {
+      format: 'es',
     },
   });

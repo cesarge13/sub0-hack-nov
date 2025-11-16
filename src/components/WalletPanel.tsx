@@ -3,6 +3,7 @@ import { useTheme } from './ThemeProvider';
 import { useState } from 'react';
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
 import { mendozaNetwork } from '../config/wagmi';
+import { ARKIV_CONFIG } from '../utils/arkiv/config';
 
 export function WalletPanel() {
   const { theme, toggleTheme } = useTheme();
@@ -37,7 +38,7 @@ export function WalletPanel() {
     setShowDropdown(false);
   };
 
-  const explorerUrl = mendozaNetwork.blockExplorers?.default?.url || 'https://mendoza.hoodi.arkiv.network';
+  const explorerUrl = ARKIV_CONFIG.explorerUrl;
   const isConnecting = isPending;
 
   return (

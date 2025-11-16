@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Search, Filter, Upload, Download, Eye, RefreshCw } from 'lucide-react';
+import { DocumentRegister } from './DocumentRegister';
 
 interface DocumentsProps {
   onUploadDocument: () => void;
@@ -8,6 +9,7 @@ interface DocumentsProps {
 export function Documents({ onUploadDocument }: DocumentsProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [showDocumentRegister, setShowDocumentRegister] = useState(false);
 
   const documents = [
     { id: 'DOC-001', name: 'ISO 27001 Certification.pdf', issuer: 'CyberSec Corp', version: 'v2.1.0', ttl: 45, integrity: 98, status: 'Valid', hash: '0x7a9c8b3e...' },
@@ -44,11 +46,11 @@ export function Documents({ onUploadDocument }: DocumentsProps) {
           <p className="text-gray-600 dark:text-gray-400 mt-1">Manage and verify your certified documents</p>
         </div>
         <button
-          onClick={onUploadDocument}
+          onClick={() => setShowDocumentRegister(true)}
           className="px-6 py-3 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-600 hover:to-emerald-700 text-white font-medium shadow-lg shadow-teal-500/30 transition-all flex items-center gap-2"
         >
           <Upload className="w-5 h-5" />
-          Upload New Document
+          Register New Document
         </button>
       </div>
 
@@ -146,6 +148,22 @@ export function Documents({ onUploadDocument }: DocumentsProps) {
           </div>
         ))}
       </div>
+
+      {/* Document Register Modal */}
+      {showDocumentRegister && (
+        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-4">
+          <div className="max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <DocumentRegister
+              onClose={() => setShowDocumentRegister(false)}
+              onComplete={(result) => {
+                console.log('Document registered:', result);
+                // TODO: Refresh documents list
+                setShowDocumentRegister(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
