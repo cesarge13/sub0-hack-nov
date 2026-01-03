@@ -7,8 +7,7 @@
  * 3. Request ECDSA signature from wallet
  * 4. Generate AES-256-GCM key + nonce
  * 5. Encrypt PDF client-side
- * 6. Upload encrypted blob to Arkiv
- * 7. Upload metadata to Arkiv
+ * 6. Display results (hash, signature, encryption info)
  * 8. Display results (objectID, metadataID, transaction info)
  */
 
@@ -32,9 +31,6 @@ import {
 import { computeFileHash } from '../utils/crypto/hashing';
 import { encryptFile, EncryptionResult } from '../utils/crypto/encryption';
 import { signHash, getWalletAddress } from '../utils/wallet/signer';
-import { arkivClient, ArkivMetadata } from '../utils/arkiv/client';
-import { uploadBlobWithSDK } from '../utils/arkiv/sdk-wrapper';
-import { mendozaNetwork } from '../config/wagmi';
 
 type FlowStep = 'upload' | 'hashing' | 'signing' | 'encrypting' | 'blob-upload' | 'metadata-upload' | 'complete';
 
@@ -324,182 +320,10 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
     handleEncryptRef.current = handleEncrypt;
   }, [handleEncrypt]);
 
-  /**
-   * Step 5: Upload encrypted blob to Arkiv
-   */
-  const handleUploadBlob = useCallback(async () => {
-    logger.flow('Starting blob upload to Arkiv', {
-      encryptedSize: encryptionResult ? `${(encryptionResult.encryptedData.byteLength / 1024).toFixed(2)} KB` : 'unknown'
-    });
-    
-    if (!encryptionResult) {
-      logger.error('Encryption result not available for blob upload', null, 'FLOW');
-      setError('Encryption result not available');
-      return;
-    }
-    
-    setCurrentStep('blob-upload');
-    setError(null);
-    logger.flow('Step changed to: blob-upload');
-    
-    try {
-      logger.arkiv('Uploading encrypted blob to Arkiv using SDK (WebSocket)...');
-      const uploadStartTime = performance.now();
-      
-      // Preparar metadata básica (el SDK combina blob + metadata)
-      const tempMetadata: ArkivMetadata = {
-        hash: hash || '',
-        signature: signature || '',
-        signer: signerAddress || walletAddress || '',
-        objectID: 'temp', // Se actualizará después
-        timestamp: Date.now(),
-        fileName: selectedFile?.name,
-        fileSize: selectedFile?.size,
-        mimeType: selectedFile?.type,
-      };
-      
-      // Usar SDK con WebSocket (evita CORS)
-      // El SDK pedirá al usuario que firme la transacción en MetaMask
-      const result = await uploadBlobWithSDK(
-        encryptionResult.encryptedData,
-        tempMetadata
-      );
-      
-      const uploadDuration = performance.now() - uploadStartTime;
-      logger.arkiv('Blob and metadata uploaded successfully via SDK', {
-        entityKey: result.entityKey,
-        objectID: result.objectID,
-        metadataID: result.metadataID,
-        duration: `${uploadDuration.toFixed(2)}ms`
-      });
-      
-      // El SDK combina blob + metadata, así que tenemos ambos IDs
-      setObjectID(result.objectID);
-      setMetadataID(result.metadataID);
-      
-      // Preparar resultado final
-      const finalResult: RegistrationResult = {
-        objectID: result.objectID,
-        metadataID: result.metadataID,
-        hash: hash || '',
-        signature: signature || '',
-        signer: signerAddress || walletAddress || '',
-        fileName: selectedFile?.name || '',
-        fileSize: selectedFile?.size || 0,
-      };
-      
-      setRegistrationResult(finalResult);
-      logger.flow('Registration complete via SDK');
-      setCurrentStep('complete');
-      
-      if (onComplete) {
-        onComplete(finalResult);
-      }
-      
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      logger.error('Blob upload failed', { error: errorMsg }, 'ARKIV');
-      setError(`Failed to upload blob: ${errorMsg}`);
-      setCurrentStep('encrypting');
-    }
-  }, [encryptionResult, hash, signature, signerAddress, walletAddress, selectedFile, onComplete]);
-  
   // Update refs when callbacks change
   useEffect(() => {
     handleSignHashRef.current = handleSignHash;
   }, [handleSignHash]);
-  
-  // Update ref when handleUploadBlob changes
-  useEffect(() => {
-    handleUploadBlobRef.current = handleUploadBlob;
-  }, [handleUploadBlob]);
-
-  /**
-   * Step 6: Upload metadata to Arkiv
-   */
-  const handleUploadMetadata = useCallback(async () => {
-    logger.flow('Starting metadata upload to Arkiv', {
-      hasHash: !!hash,
-      hasSignature: !!signature,
-      hasSigner: !!signerAddress,
-      hasObjectID: !!objectID,
-      hasFile: !!selectedFile
-    });
-    
-    if (!hash || !signature || !signerAddress || !objectID || !selectedFile) {
-      logger.error('Missing required data for metadata upload', {
-        hash: !!hash,
-        signature: !!signature,
-        signerAddress: !!signerAddress,
-        objectID: !!objectID,
-        selectedFile: !!selectedFile
-      }, 'FLOW');
-      setError('Missing required data for metadata upload');
-      return;
-    }
-    
-    setCurrentStep('metadata-upload');
-    setError(null);
-    logger.flow('Step changed to: metadata-upload');
-    
-    try {
-      const metadata: ArkivMetadata = {
-        hash,
-        signature,
-        signer: signerAddress,
-        objectID,
-        timestamp: Date.now(),
-        fileName: selectedFile.name,
-        fileSize: selectedFile.size,
-        mimeType: selectedFile.type,
-      };
-      
-      logger.arkiv('Uploading metadata to Arkiv...', {
-        hash: hash.substring(0, 20) + '...',
-        signer: signerAddress,
-        objectID,
-        fileName: selectedFile.name
-      });
-      
-      const uploadStartTime = performance.now();
-      const mid = await arkivClient.putMetadata(metadata);
-      const uploadDuration = performance.now() - uploadStartTime;
-      
-      logger.arkiv('Metadata uploaded successfully', {
-        metadataID: mid,
-        duration: `${uploadDuration.toFixed(2)}ms`
-      });
-      
-      setMetadataID(mid);
-      
-      // Create final result
-      const result: RegistrationResult = {
-        objectID,
-        metadataID: mid,
-        hash,
-        signature,
-        signer: signerAddress,
-        fileName: selectedFile.name,
-        fileSize: selectedFile.size,
-      };
-      
-      setRegistrationResult(result);
-      setCurrentStep('complete');
-      
-      // Call onComplete callback if provided
-      if (onComplete) {
-        onComplete(result);
-      }
-    } catch (err) {
-      setError(`Failed to upload metadata: ${err instanceof Error ? err.message : 'Unknown error'}`);
-      setCurrentStep('blob-upload');
-    }
-  }, [hash, signature, signerAddress, objectID, selectedFile, onComplete]);
-  
-  // Update ref when handleUploadMetadata changes
-  useEffect(() => {
-    handleUploadMetadataRef.current = handleUploadMetadata;
-  }, [handleUploadMetadata]);
   
   /**
    * Copy to clipboard helper
@@ -532,7 +356,7 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
   }, []);
 
   const isStepComplete = (step: FlowStep): boolean => {
-    const stepOrder: FlowStep[] = ['upload', 'hashing', 'signing', 'encrypting', 'blob-upload', 'metadata-upload', 'complete'];
+    const stepOrder: FlowStep[] = ['upload', 'hashing', 'signing', 'encrypting', 'complete'];
     return stepOrder.indexOf(currentStep) > stepOrder.indexOf(step);
   };
 
@@ -547,7 +371,7 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Document Registration</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            Flow 2: Upload, Sign, Encrypt & Store on Arkiv
+            Upload, Sign & Encrypt Document
           </p>
         </div>
         {onClose && (
@@ -579,8 +403,6 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
             { step: 'hashing', label: 'Hash' },
             { step: 'signing', label: 'Sign' },
             { step: 'encrypting', label: 'Encrypt' },
-            { step: 'blob-upload', label: 'Upload Blob' },
-            { step: 'metadata-upload', label: 'Metadata' },
           ].map(({ step, label }, index) => (
             <div key={step} className="flex items-center flex-1">
               <div className="flex flex-col items-center flex-1">
@@ -603,7 +425,7 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
                 </div>
                 <span className="text-xs mt-2 text-gray-600 dark:text-gray-400">{label}</span>
               </div>
-              {index < 5 && (
+              {index < 3 && (
                 <div
                   className={`h-0.5 flex-1 mx-2 ${
                     isStepComplete(step as FlowStep) ? 'bg-green-500' : 'bg-gray-200 dark:bg-slate-700'
@@ -777,12 +599,9 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
                     Encrypted size: {(encryptionResult.encryptedData.byteLength / 1024).toFixed(2)} KB
                   </p>
                 </div>
-                <button
-                  onClick={handleUploadBlob}
-                  className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors"
-                >
-                  Upload to Arkiv
-                </button>
+                <div className="text-sm text-gray-600 dark:text-gray-400 text-center">
+                  Document encrypted successfully. Registration complete.
+                </div>
               </>
             ) : (
               <>
@@ -805,69 +624,7 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
           </div>
         )}
 
-        {/* Step 5: Blob Upload */}
-        {currentStep === 'blob-upload' && objectID && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Blob Uploaded</h3>
-            <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <CloudUpload className="w-5 h-5 text-teal-600" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Object ID</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <code className="text-xs font-mono text-gray-900 dark:text-white break-all flex-1">
-                  {objectID}
-                </code>
-                <button
-                  onClick={() => copyToClipboard(objectID, 'objectID')}
-                  className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded"
-                >
-                  {copiedField === 'objectID' ? (
-                    <Check className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-gray-500" />
-                  )}
-                </button>
-              </div>
-            </div>
-            <button
-              onClick={handleUploadMetadata}
-              className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg font-medium transition-colors"
-            >
-              Upload Metadata
-            </button>
-          </div>
-        )}
-
-        {/* Step 6: Metadata Upload */}
-        {currentStep === 'metadata-upload' && metadataID && (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Metadata Uploaded</h3>
-            <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <CloudUpload className="w-5 h-5 text-teal-600" />
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metadata ID</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <code className="text-xs font-mono text-gray-900 dark:text-white break-all flex-1">
-                  {metadataID}
-                </code>
-                <button
-                  onClick={() => copyToClipboard(metadataID, 'metadataID')}
-                  className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded"
-                >
-                  {copiedField === 'metadataID' ? (
-                    <Check className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-gray-500" />
-                  )}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step 7: Complete */}
+        {/* Step 5: Complete */}
         {currentStep === 'complete' && registrationResult && (
           <div className="space-y-4">
             <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
@@ -876,7 +633,7 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
                 Registration Complete!
               </h3>
               <p className="text-sm text-green-800 dark:text-green-200">
-                Your document has been successfully registered on Arkiv Network
+                Your document has been successfully processed and encrypted
               </p>
             </div>
 
@@ -886,44 +643,6 @@ export function DocumentRegister({ onClose, onComplete }: DocumentRegisterProps)
               <div>
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-300">File:</span>
                 <p className="text-sm text-gray-900 dark:text-white">{registrationResult.fileName}</p>
-              </div>
-              
-              <div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Object ID:</span>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="text-xs font-mono text-gray-900 dark:text-white break-all flex-1">
-                    {registrationResult.objectID}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(registrationResult.objectID, 'result-objectID')}
-                    className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded"
-                  >
-                    {copiedField === 'result-objectID' ? (
-                      <Check className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-gray-500" />
-                    )}
-                  </button>
-                </div>
-              </div>
-              
-              <div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Metadata ID:</span>
-                <div className="flex items-center gap-2 mt-1">
-                  <code className="text-xs font-mono text-gray-900 dark:text-white break-all flex-1">
-                    {registrationResult.metadataID}
-                  </code>
-                  <button
-                    onClick={() => copyToClipboard(registrationResult.metadataID, 'result-metadataID')}
-                    className="p-1 hover:bg-gray-200 dark:hover:bg-slate-700 rounded"
-                  >
-                    {copiedField === 'result-metadataID' ? (
-                      <Check className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-gray-500" />
-                    )}
-                  </button>
-                </div>
               </div>
               
               <div>

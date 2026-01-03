@@ -1,11 +1,13 @@
-# Certik - Document Certification Platform
+# Certifik - Plataforma de Trazabilidad Sostenible para el Gobierno de Chile
 
-> **A decentralized document certification system built on Arkiv Network and Mendoza Blockchain**
+> **Plataforma gubernamental de trazabilidad sostenible y cumplimiento ambiental mediante blockchain**
+
+> **Desarrollada para el Gobierno de Chile - Cluster 6: Tecnologías Aplicadas a la Sostenibilidad**
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=flat&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=flat&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Arkiv Network](https://img.shields.io/badge/Arkiv-Network-00D9FF?style=flat)](https://arkiv.network/)
+[![Blockchain](https://img.shields.io/badge/Blockchain-Transparente-00D9FF?style=flat)](https://www.gob.cl/)
 
 ## 📋 Tabla de Contenidos
 
@@ -23,16 +25,52 @@
 - [Contribución](#-contribución)
 - [Licencia](#-licencia)
 
+## 📖 Guía de Usuario
+
+**¿Eres nuevo en la plataforma?** 👋
+
+👉 **[Lee la Guía Completa de Usuario aquí](./GUIA_USUARIO.md)**
+
+Esta guía explica paso a paso:
+- ✅ Para qué sirve la plataforma
+- ✅ Cómo registrar activos y eventos
+- ✅ Cómo interpretar alertas y métricas
+- ✅ Casos de uso prácticos para faenas mineras
+- ✅ Conceptos clave explicados de forma simple
+
+---
+
 ## 🎯 Descripción
 
-**Certik** es una plataforma descentralizada para la certificación y almacenamiento seguro de documentos. El sistema permite a los usuarios:
+**Certifik** es una plataforma descentralizada de **trazabilidad y cumplimiento enfocada en sostenibilidad**, que permite a empresas de los sectores **agro, industria y energía**:
 
-- **Subir documentos** (PDFs) de forma segura
-- **Encriptar documentos** usando AES-256-GCM antes de subirlos
-- **Firmar documentos** con su wallet de Ethereum (MetaMask)
-- **Almacenar documentos** en Arkiv Network (IPFS descentralizado)
-- **Registrar metadata** en la blockchain de Mendoza Network
-- **Verificar integridad** de documentos en cualquier momento
+- **Rastrear el impacto ambiental** de sus activos y procesos mediante blockchain inmutable
+- **Certificar cumplimiento** con estándares internacionales de sostenibilidad (ISO 14001, ISO 50001, GRI, SDGs)
+- **Medir y reducir** la huella de carbono y uso de recursos naturales
+- **Demostrar transparencia** en prácticas sostenibles mediante registros blockchain verificables
+- **Facilitar reportes ESG** (Environmental, Social, Governance) con trazabilidad completa
+- **Gestionar renovaciones** de certificaciones ambientales y de sostenibilidad
+
+### Casos de Uso Principales
+
+#### 1. **Certificación de Productos Sostenibles**
+- Trazabilidad de productos con certificación orgánica o sostenible
+- Verificación de cadena de suministro sostenible
+- Certificación de energía renovable (I-REC, Carbon Trust)
+- Certificación de economía circular
+
+#### 2. **Gestión de Cumplimiento Ambiental**
+- Auditorías ambientales (ISO 14001)
+- Medición de huella de carbono (ISO 14064)
+- Gestión de residuos y economía circular
+- Seguimiento de uso de agua y recursos naturales
+- Evaluación de biodiversidad
+
+#### 3. **Reportes de Sostenibilidad**
+- Reportes GRI Standards (Global Reporting Initiative)
+- Alineación con SDGs (Objetivos de Desarrollo Sostenible)
+- Certificaciones B-Corp
+- Reportes de impacto social y ambiental
 
 ### Flujo Principal (según último commit)
 
@@ -45,21 +83,27 @@
 - **Encriptación AES-256-GCM**: Encriptación client-side antes de subir
 - **Firmas ECDSA**: Verificación criptográfica con wallets de Ethereum
 - **Hashing SHA-256**: Verificación de integridad de documentos
-- **Almacenamiento Descentralizado**: IPFS a través de Arkiv Network
+- **Almacenamiento Descentralizado**: IPFS para almacenamiento distribuido y verificable
 
 ### 🌐 Integración Blockchain
 
-- **Mendoza Network**: Blockchain L3 de Arkiv para registros inmutables
-- **MetaMask Integration**: Conexión directa con wallets de Ethereum
-- **Gas Fees**: Pago automático de fees de transacción
-- **Merkle Commitments**: Registros eficientes en blockchain
+- **Blockchain Público**: Registros inmutables y verificables mediante tecnología blockchain
+- **Integración de Wallets**: Conexión con wallets para firmas criptográficas
+- **Registros Transparentes**: Todos los eventos y certificaciones son verificables públicamente
+- **Trazabilidad Completa**: Historial completo e inmutable de todos los eventos de sostenibilidad
 
-### 📊 Dashboard Completo
+### 📊 Dashboard Completo de Sostenibilidad
 
-- **Gestión de Documentos**: Visualización y gestión de documentos certificados
-- **Verificaciones**: Sistema de verificación de integridad
-- **Analytics**: Estadísticas y métricas de uso
-- **Alertas TTL**: Notificaciones de expiración de documentos
+- **KPIs de Sostenibilidad**: 
+  - Huella de Carbono Reducida (tCO₂e)
+  - Eficiencia de Recursos (score 0-100)
+  - Cobertura de Estándares de Sostenibilidad
+  - Compliance Rate y Audit Readiness Score
+- **Gestión de Assets**: Trazabilidad completa de activos con impacto ambiental
+- **Eventos de Sostenibilidad**: Seguimiento de eventos ambientales, certificaciones y auditorías
+- **Analytics de Impacto Ambiental**: Gráficos de huella de carbono, uso de recursos, y comparativas
+- **Compliance Renewals**: Alertas y gestión de renovaciones de certificaciones ambientales
+- **Verificaciones**: Sistema de verificación de integridad mediante blockchain
 
 ## 🏗️ Arquitectura del Sistema
 
@@ -309,32 +353,34 @@ export default defineConfig({
 
 ## 📖 Uso
 
-### Registrar un Documento
+### Registrar un Asset Sostenible
 
 1. **Conectar Wallet**
    - Haz clic en "Connect Wallet" en la parte superior
-   - Aproba la conexión en MetaMask
+   - Aprueba la conexión en MetaMask
    - Asegúrate de estar conectado a Mendoza Network
 
-2. **Subir Documento**
-   - Navega a la sección "Documents"
-   - Haz clic en "Register New Document"
-   - Selecciona un archivo PDF (recomendado < 100KB)
+2. **Registrar Asset**
+   - Navega a la sección "Assets"
+   - Haz clic en "Register New Asset"
+   - Completa la información del asset (nombre, tipo, sector, ubicación)
 
-3. **Seguir el Flujo**
-   - El sistema procesará automáticamente:
-     - ✅ Upload del archivo
-     - ✅ Cálculo del hash
-     - ✅ Firma con tu wallet (aprobar en MetaMask)
-     - ✅ Encriptación AES-256-GCM
-     - ✅ Upload del blob encriptado
-     - ✅ Registro de metadata
+3. **Agregar Eventos de Sostenibilidad**
+   - Desde el detalle del asset, haz clic en "Add Event"
+   - Selecciona el tipo de evento (ej: Medición de Huella de Carbono, Certificación de Energía Renovable)
+   - Ingresa el estándar aplicable (ISO 14001, ISO 50001, GRI, SDGs, etc.)
+   - Sube evidencia (opcional) y calcula hash SHA-256
+   - El sistema subirá el manifest a IPFS automáticamente
 
-4. **Verificar Resultados**
-   - Se mostrarán los IDs del documento:
-     - `objectID`: ID del blob encriptado en IPFS
-     - `metadataID`: ID de la metadata en Arkiv
-   - El documento aparecerá en tu dashboard
+4. **Attest on-chain (Opcional)**
+   - Después de subir a IPFS, puedes hacer "Attest on-chain"
+   - Esto registra el evento permanentemente en blockchain
+   - El evento quedará con status "valid" y txHash
+
+5. **Monitorear KPIs**
+   - Ve al Dashboard para ver KPIs de sostenibilidad actualizados
+   - Revisa Analytics para ver impacto ambiental detallado
+   - Usa Compliance Renewals para gestionar renovaciones
 
 ### Verificar un Documento
 

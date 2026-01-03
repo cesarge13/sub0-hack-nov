@@ -21,6 +21,17 @@ export async function computeSHA256(buffer: ArrayBuffer): Promise<string> {
       bufferSize: `${(bufferSize / 1024).toFixed(2)} KB`
     }, 'HASHING');
     
+    // Check if Web Crypto API is available
+    if (!crypto || !crypto.subtle) {
+      const errorMsg = 'Web Crypto API is not available. Make sure you are using HTTPS or localhost.';
+      logger.error('Web Crypto API unavailable', {
+        hasCrypto: !!crypto,
+        hasSubtle: !!(crypto && crypto.subtle),
+        protocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown'
+      }, 'HASHING');
+      throw new Error(errorMsg);
+    }
+    
     // Use Web Crypto API for SHA-256 hashing
     const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
     

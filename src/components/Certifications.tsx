@@ -2,17 +2,17 @@ import { Award, Calendar, User, RefreshCw } from 'lucide-react';
 
 export function Certifications() {
   const certifications = [
-    { id: 'CERT-001', title: 'ISO 27001:2022 Information Security', issuer: 'CyberSec Corp', issuerAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f912a3', version: 'v2.1.0', expiration: '2025-12-31', integrity: 98, status: 'Valid' },
-    { id: 'CERT-002', title: 'SOC 2 Type II Compliance', issuer: 'Audit Partners LLC', issuerAddress: '0x8f9A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8', version: 'v1.3.0', expiration: '2025-01-15', integrity: 100, status: 'Valid' },
-    { id: 'CERT-003', title: 'GDPR Data Protection Certificate', issuer: 'Privacy Authority', issuerAddress: '0x1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q8R9S0', version: 'v3.0.1', expiration: '2025-03-20', integrity: 96, status: 'Valid' },
+    { id: 'CERT-001', title: 'ISO 27001:2022 Seguridad de la Información', issuer: 'CyberSec Corp', issuerAddress: '0x742d35Cc6634C0532925a3b844Bc9e7595f912a3', version: 'v2.1.0', expiration: '2025-12-31', integrity: 98, status: 'Valid' },
+    { id: 'CERT-002', title: 'Cumplimiento SOC 2 Tipo II', issuer: 'Audit Partners LLC', issuerAddress: '0x8f9A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8', version: 'v1.3.0', expiration: '2025-01-15', integrity: 100, status: 'Valid' },
+    { id: 'CERT-003', title: 'Certificado de Protección de Datos GDPR', issuer: 'Privacy Authority', issuerAddress: '0x1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q8R9S0', version: 'v3.0.1', expiration: '2025-03-20', integrity: 96, status: 'Valid' },
   ];
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Certifications</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Active and pending certificate validations</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Certificaciones</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Certificados activos y validaciones pendientes</p>
       </div>
 
       {/* Stats */}
@@ -24,7 +24,7 @@ export function Certifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">142</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Active Certificates</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Certificados Activos</div>
             </div>
           </div>
         </div>
@@ -36,7 +36,7 @@ export function Certifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">6</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Pending Validation</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Validación Pendiente</div>
             </div>
           </div>
         </div>
@@ -48,7 +48,7 @@ export function Certifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">98%</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Average Score</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Puntuación Promedio</div>
             </div>
           </div>
         </div>

@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { User, Bell, Shield, Key, Globe, CheckCircle } from 'lucide-react';
+import { WalletLinking } from './WalletLinking';
+import { useUser } from '../hooks/useUser';
 
 export function Settings() {
+  const { user, organization } = useUser();
   const [notifications, setNotifications] = useState({
     email: true,
-    ttlAlerts: true,
+    complianceRenewals: true,
     securityAlerts: true,
     weeklyReport: false
   });
@@ -13,19 +16,29 @@ export function Settings() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Settings</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Manage your account and system configuration</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Configuración</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Gestiona tu cuenta y configuración del sistema</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile */}
-        <SettingsCard icon={User} title="Profile" color="teal">
+        <SettingsCard icon={User} title="Perfil" color="teal">
           <div className="space-y-4">
-            <Input label="Organization Name" defaultValue="Enterprise Corp" />
-            <Input label="Contact Email" defaultValue="admin@enterprise.com" />
-            <Input label="Admin Name" defaultValue="John Doe" />
+            <Input label="Nombre de Organización" defaultValue={organization?.name || 'No especificada'} />
+            <Input label="Email" defaultValue={user?.email || 'No autenticado'} />
+            <Input label="Nombre" defaultValue={user?.name || 'No especificado'} />
+            {user?.walletAddress && (
+              <div>
+                <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Wallet Vinculada</label>
+                <div className="px-4 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+                  <code className="text-xs font-mono text-gray-900 dark:text-white">
+                    {user.walletAddress.slice(0, 6)}...{user.walletAddress.slice(-4)}
+                  </code>
+                </div>
+              </div>
+            )}
             <button className="w-full px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition-colors font-medium">
-              Update Profile
+              Actualizar Perfil
             </button>
           </div>
         </SettingsCard>
@@ -39,9 +52,9 @@ export function Settings() {
               onChange={() => setNotifications({...notifications, email: !notifications.email})}
             />
             <Toggle 
-              label="TTL Alerts" 
-              enabled={notifications.ttlAlerts}
-              onChange={() => setNotifications({...notifications, ttlAlerts: !notifications.ttlAlerts})}
+              label="Compliance Renewals" 
+              enabled={notifications.complianceRenewals}
+              onChange={() => setNotifications({...notifications, complianceRenewals: !notifications.complianceRenewals})}
             />
             <Toggle 
               label="Security Alerts" 
@@ -76,33 +89,40 @@ export function Settings() {
         </SettingsCard>
       </div>
 
-      {/* Arkiv API Configuration */}
+      {/* Wallet Linking */}
+      {user && (
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
+          <WalletLinking />
+        </div>
+      )}
+
+      {/* Certification Configuration */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 rounded-xl bg-teal-100 dark:bg-teal-500/10 border border-teal-200 dark:border-teal-500/20 flex items-center justify-center">
             <Key className="w-6 h-6 text-teal-600 dark:text-teal-400" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Arkiv SDK Configuration</h3>
-            <p className="text-sm text-gray-600 dark:text-gray-400">Manage your Arkiv Protocol integration</p>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">Configuración de Certificación</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">Gestiona la configuración de certificación ESG</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">API Endpoint</label>
+            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Endpoint de Certificación</label>
             <input
               type="text"
-              defaultValue="https://api.arkiv.network/v1"
+              defaultValue="Configuración gubernamental"
               className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               readOnly
             />
           </div>
           <div>
-            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">API Key</label>
+            <label className="text-sm text-gray-600 dark:text-gray-400 mb-2 block">Clave de Acceso</label>
             <input
               type="password"
-              defaultValue="ak_live_xxxxxxxxxxxxxxxxxx"
+              defaultValue="••••••••••••••••"
               className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               readOnly
             />
@@ -123,10 +143,10 @@ export function Settings() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <StatusItem label="Mendoza Network" status="online" />
-          <StatusItem label="IPFS Gateway" status="online" />
-          <StatusItem label="Arkiv Protocol" status="online" />
-          <StatusItem label="Database" status="online" />
+          <StatusItem label="Certificación ESG" status="online" />
+          <StatusItem label="Almacenamiento Descentralizado" status="online" />
+          <StatusItem label="Base de Datos Local" status="online" />
+          <StatusItem label="Sistema de Verificación" status="online" />
         </div>
       </div>
     </div>

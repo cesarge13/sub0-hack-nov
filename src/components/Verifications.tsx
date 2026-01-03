@@ -2,11 +2,11 @@ import { ShieldCheck, CheckCircle, XCircle, Clock } from 'lucide-react';
 
 export function Verifications() {
   const verifications = [
-    { id: 'VER-001', document: 'ISO 27001 Certification', hash: '0x7a9c8b3e5f2d1a4b...', timestamp: '2024-11-16 14:32:15', result: 'Valid', verifier: '0x742d35Cc...' },
-    { id: 'VER-002', document: 'SOC 2 Type II Report', hash: '0x3f4a5b6c7d8e9f0a...', timestamp: '2024-11-16 13:18:42', result: 'Valid', verifier: '0x8f9A1B2C...' },
-    { id: 'VER-003', document: 'GDPR Compliance Certificate', hash: '0x9b8c7d6e5f4a3b2c...', timestamp: '2024-11-16 11:05:33', result: 'Failed', verifier: '0x1A2B3C4D...' },
-    { id: 'VER-004', document: 'PCI DSS Attestation', hash: '0x1a2b3c4d5e6f7a8b...', timestamp: '2024-11-16 09:47:21', result: 'Valid', verifier: '0x5C6D7E8F...' },
-    { id: 'VER-005', document: 'HIPAA Compliance Report', hash: '0x8f7e6d5c4b3a2918...', timestamp: '2024-11-15 16:22:09', result: 'Pending', verifier: '0x9F0A1B2C...' },
+    { id: 'VER-001', document: 'Certificación ISO 27001', hash: '0x7a9c8b3e5f2d1a4b...', timestamp: '2024-11-16 14:32:15', result: 'Valid', verifier: '0x742d35Cc...' },
+    { id: 'VER-002', document: 'Informe SOC 2 Tipo II', hash: '0x3f4a5b6c7d8e9f0a...', timestamp: '2024-11-16 13:18:42', result: 'Valid', verifier: '0x8f9A1B2C...' },
+    { id: 'VER-003', document: 'Certificado de Cumplimiento GDPR', hash: '0x9b8c7d6e5f4a3b2c...', timestamp: '2024-11-16 11:05:33', result: 'Failed', verifier: '0x1A2B3C4D...' },
+    { id: 'VER-004', document: 'Atestación PCI DSS', hash: '0x1a2b3c4d5e6f7a8b...', timestamp: '2024-11-16 09:47:21', result: 'Valid', verifier: '0x5C6D7E8F...' },
+    { id: 'VER-005', document: 'Informe de Cumplimiento HIPAA', hash: '0x8f7e6d5c4b3a2918...', timestamp: '2024-11-15 16:22:09', result: 'Pending', verifier: '0x9F0A1B2C...' },
   ];
 
   const getResultBadge = (result: string) => {
@@ -26,8 +26,8 @@ export function Verifications() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Verifications</h1>
-        <p className="text-gray-600 dark:text-gray-400 mt-1">Document verification history and results</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Verificaciones</h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-1">Historial y resultados de verificación de documentos</p>
       </div>
 
       {/* Stats */}
@@ -39,7 +39,7 @@ export function Verifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">1,247</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Total Verifications</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total de Verificaciones</div>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@ export function Verifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">1,198</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Successful</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Exitosas</div>
             </div>
           </div>
         </div>
@@ -63,7 +63,7 @@ export function Verifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">32</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Failed</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Fallidas</div>
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export function Verifications() {
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900 dark:text-white">17</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">Pending</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Pendientes</div>
             </div>
           </div>
         </div>
@@ -86,12 +86,12 @@ export function Verifications() {
         <table className="w-full">
           <thead className="bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Verification ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Document</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">ID de Verificación</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Documento</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Hash</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Timestamp</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Verifier</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Result</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Fecha y Hora</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Verificador</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Resultado</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
@@ -119,7 +119,7 @@ export function Verifications() {
                   <td className="px-6 py-4">
                     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium border ${badge.bg} ${badge.text} ${badge.border}`}>
                       <Icon className="w-3 h-3" />
-                      {ver.result}
+                      {ver.result === 'Valid' ? 'Válido' : ver.result === 'Failed' ? 'Fallido' : 'Pendiente'}
                     </span>
                   </td>
                 </tr>

@@ -20,6 +20,17 @@ export interface EncryptionResult {
  */
 export async function generateAESKey(): Promise<CryptoKey> {
   try {
+    // Check if Web Crypto API is available
+    if (!crypto || !crypto.subtle) {
+      const errorMsg = 'Web Crypto API is not available. Make sure you are using HTTPS or localhost.';
+      logger.error('Web Crypto API unavailable', {
+        hasCrypto: !!crypto,
+        hasSubtle: !!(crypto && crypto.subtle),
+        protocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown'
+      }, 'ENCRYPTION');
+      throw new Error(errorMsg);
+    }
+    
     logger.encryption('Generating AES-256 key...');
     const startTime = performance.now();
     
@@ -47,6 +58,17 @@ export async function generateAESKey(): Promise<CryptoKey> {
  * @returns Uint8Array containing 12 random bytes
  */
 export function generateNonce(): Uint8Array {
+  // Check if Web Crypto API is available
+  if (!crypto || !crypto.getRandomValues) {
+    const errorMsg = 'Web Crypto API is not available. Make sure you are using HTTPS or localhost.';
+    logger.error('Web Crypto API unavailable for nonce generation', {
+      hasCrypto: !!crypto,
+      hasGetRandomValues: !!(crypto && crypto.getRandomValues),
+      protocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown'
+    }, 'ENCRYPTION');
+    throw new Error(errorMsg);
+  }
+  
   logger.encryption('Generating random nonce (96 bits)...');
   const nonce = crypto.getRandomValues(new Uint8Array(12));
   logger.encryption('Nonce generated', { 
@@ -106,6 +128,17 @@ export async function encryptAES256GCM(
   const originalSize = data.byteLength;
   
   try {
+    // Check if Web Crypto API is available
+    if (!crypto || !crypto.subtle) {
+      const errorMsg = 'Web Crypto API is not available. Make sure you are using HTTPS or localhost.';
+      logger.error('Web Crypto API unavailable', {
+        hasCrypto: !!crypto,
+        hasSubtle: !!(crypto && crypto.subtle),
+        protocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown'
+      }, 'ENCRYPTION');
+      throw new Error(errorMsg);
+    }
+    
     logger.encryption('Starting AES-256-GCM encryption', {
       originalSize: `${(originalSize / 1024).toFixed(2)} KB`,
       hasKey: !!key,
@@ -123,10 +156,11 @@ export async function encryptAES256GCM(
     });
     
     // Encrypt the data
+    // TypeScript workaround: cast nonce to BufferSource
     const encryptedData = await crypto.subtle.encrypt(
       {
         name: 'AES-GCM',
-        iv: encryptionNonce,
+        iv: encryptionNonce as BufferSource,
         tagLength: 128, // 128-bit authentication tag
       },
       encryptionKey,
@@ -184,10 +218,11 @@ export async function decryptAES256GCM(
   nonce: Uint8Array
 ): Promise<ArrayBuffer> {
   try {
+    // TypeScript workaround: cast nonce to BufferSource
     const decryptedData = await crypto.subtle.decrypt(
       {
         name: 'AES-GCM',
-        iv: nonce,
+        iv: nonce as BufferSource,
         tagLength: 128,
       },
       key,

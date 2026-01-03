@@ -1,13 +1,19 @@
+import React from 'react';
 import { 
   LayoutDashboard, 
-  FileText, 
+  Package, 
+  Activity,
   Award, 
   ShieldCheck,
-  Clock, 
+  RefreshCw, 
   BarChart3, 
   Settings,
-  Shield
+  Target,
+  Users,
+  AlertTriangle
 } from 'lucide-react';
+import { usePermissions } from '../hooks/usePermissions';
+import { Logo } from './Logo';
 
 interface SidebarProps {
   currentScreen: string;
@@ -15,35 +21,28 @@ interface SidebarProps {
 }
 
 export function Sidebar({ currentScreen, onNavigate }: SidebarProps) {
+  const { isAdmin, canManageUsers } = usePermissions();
+  
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'documents', label: 'Documents', icon: FileText },
-    { id: 'certifications', label: 'Certifications', icon: Award },
-    { id: 'verifications', label: 'Verifications', icon: ShieldCheck },
-    { id: 'ttl-alerts', label: 'TTL Alerts', icon: Clock },
-    { id: 'analytics', label: 'Analytics', icon: BarChart3 },
-    { id: 'settings', label: 'Settings', icon: Settings },
+    { id: 'dashboard', label: 'Panel Principal', icon: LayoutDashboard },
+    { id: 'operational-alerts', label: 'Alertas Operativas', icon: AlertTriangle },
+    { id: 'decision-support', label: 'Apoyo a Decisiones', icon: Target },
+    { id: 'assets', label: 'Activos Mineros', icon: Package },
+    { id: 'events', label: 'Eventos', icon: Activity },
+    { id: 'certifications', label: 'Certificaciones', icon: Award },
+    { id: 'verifications', label: 'Verificaciones', icon: ShieldCheck },
+    { id: 'compliance-renewals', label: 'Renovaciones', icon: RefreshCw },
+    { id: 'analytics', label: 'Analíticas', icon: BarChart3 },
+    ...(isAdmin || canManageUsers ? [{ id: 'user-management', label: 'Gestión de Usuarios', icon: Users }] : []),
+    { id: 'settings', label: 'Configuración', icon: Settings },
   ];
 
   return (
     <div className="w-72 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col">
       {/* Logo */}
       <div className="p-6 border-b border-gray-200 dark:border-slate-800">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div 
-              className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-teal-500 to-emerald-600 shadow-lg"
-              style={{ boxShadow: '0 8px 24px rgba(20, 184, 166, 0.3)' }}
-            >
-              <Shield className="w-7 h-7 text-white" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-400 rounded-full animate-pulse" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Certik</h1>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Document Certification</p>
-          </div>
-        </div>
+        <Logo size="md" />
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 ml-1">Gestión de Recursos Mineros</p>
       </div>
 
       {/* Navigation */}
@@ -77,13 +76,13 @@ export function Sidebar({ currentScreen, onNavigate }: SidebarProps) {
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 dark:border-slate-800 space-y-3">
         <div className="text-xs text-gray-500 dark:text-gray-400">
-          <p className="mb-2">Powered by</p>
+          <p className="mb-2">Plataforma para faenas mineras</p>
           <div className="flex flex-wrap gap-2">
             <span className="inline-flex items-center px-2 py-1 rounded-lg bg-teal-100 dark:bg-teal-500/10 text-teal-700 dark:text-teal-400 text-xs font-medium">
-              Arkiv Protocol
+              Agua & Energía
             </span>
-            <span className="inline-flex items-center px-2 py-1 rounded-lg bg-purple-100 dark:bg-purple-500/10 text-purple-700 dark:text-purple-400 text-xs font-medium">
-              IPFS
+            <span className="inline-flex items-center px-2 py-1 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-400 text-xs font-medium">
+              ESG Verificable
             </span>
           </div>
         </div>
